@@ -1,14 +1,4 @@
 {
-  "previews": [
-    {
-      "slug": "claude-skills-fallback",
-      "branch": "claude-skills-fallback",
-      "pr": "2",
-      "title": "Fall back to .agents/skills when Claude's skills link is broken",
-      "commit": "c87828add1c044f3c2ccc54ef0fc80c01aac1314",
-      "created": "2026-10-18T05:05:09.906Z",
-      "updated": "2026-10-18T05:05:09.906Z"
-    }
-  ],
+  "previews": [],
   "snapshots": []
 }
