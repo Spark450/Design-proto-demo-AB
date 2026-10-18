@@ -7,9 +7,9 @@ copy:
 
 1. Select **Use this template → Create a new repository** at the top of this
    page.
-2. Set **Owner** to **GovAlta-Lab**, give it a short name, and choose
-   **Private**. Then select **Create repository**.
-3. In the Copilot app, add your new repo as a project.
+2. Leave **Owner** as your own account, give it a short name, and choose
+   **Public**. Then select **Create repository**.
+3. Open your new repo in your AI coding app: Claude, GitHub Copilot or Codex.
 4. Start a session in it and say: *"Set this up."*
 
 The AI asks a few questions, gets it running, switches on its live link and
@@ -17,8 +17,8 @@ opens your first pull request. It takes about 10 minutes. First time? Work
 through [Getting set up](docs/getting-set-up.md) first.
 
 To see what you start with before making a copy, open the template's live demo:
-<https://legendary-eureka-kmykeln.pages.github.io/>. The Angular version is at
-<https://legendary-eureka-kmykeln.pages.github.io/angular/>.
+<https://spark450.github.io/Design-proto-demo-AB/>. The Angular version is at
+<https://spark450.github.io/Design-proto-demo-AB/angular/>.
 
 **Working on the template itself?** The React app lives in `apps/react/`, under
 a small wrapper `package.json` that passes `npm run ...` commands through to it.
@@ -61,14 +61,16 @@ situations.
 
 ### Who can open these links
 
-**Anyone you send a link to needs a GitHub account with access to this repo.**
-The site is private, so people outside the organisation see an error page
-instead of the prototype. Moderated research still works: share your screen, or
-let the participant use your computer.
+**Anyone with a link can open it.** The site is public, and so is every preview
+and snapshot. No GitHub account is needed. That means you can send a link to a
+research participant, but it also means you should treat everything in this
+repo as public. [Getting set up](docs/getting-set-up.md#public-or-private)
+explains why.
 
 ## How to work on it
 
-Open this repo in the GitHub Copilot app and say what you want in plain words,
+Open this repo in your AI coding app (Claude, GitHub Copilot or Codex) and say
+what you want in plain words,
 for example *"Add a page that asks for the applicant's address."* The AI already
 knows how this repo works. It uses the design system, writes plain-language
 content and opens pull requests the right way, without you having to ask.
@@ -126,7 +128,7 @@ Leave `npm run dev` running. Save a file and the page updates by itself.
 | `src/App.tsx` | The list of every page address, and which sides the directory and the prototype controls show |
 | `docs/` | Requirements docs and guides |
 | `.agents/skills/` | Instructions the AI follows on its own. You don't need to open these |
-| `AGENTS.md` | House rules for the AI |
+| `AGENTS.md` | House rules for the AI. `CLAUDE.md` points Claude at it |
 
 ### Which files belong to each side
 
@@ -156,7 +158,7 @@ afterwards to check nothing else needed it.
 | `src/styles.css` | Styles for the whole prototype, including the table rules |
 | `docs/` | Requirements docs and guides |
 | `.agents/skills/` | Instructions the AI follows on its own. You don't need to open these |
-| `AGENTS.md` | House rules for the AI |
+| `AGENTS.md` | House rules for the AI. `CLAUDE.md` points Claude at it |
 
 ### Which files belong to each side
 
@@ -270,8 +272,10 @@ branch exists. In a new copy of the template, first-run setup does this.
 
 <!-- /ANGULAR -->
 
-- **The page is marked `noindex`.** The site is already private, but a prototype
-  turning up in search results is a real enough risk to guard against twice.
-- **Never commit real data.** The repo is private today, but that can change,
-  and anything committed stays in git history even after it's deleted. That
-  includes research transcripts, screenshots of internal systems and keys.
+- **The page is marked `noindex`.** The site is public, so this asks search
+  engines to leave it out of their results. It's a request, not a lock.
+- **Never commit real data.** The repo is public, and anything committed stays
+  in git history even after it's deleted. That includes research transcripts,
+  screenshots of internal systems and keys.
+- **Skills live in `.agents/skills/`.** Copilot and Codex read them from there.
+  `.claude/skills` is a link to the same folder, so Claude reads them too.

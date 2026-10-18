@@ -61,25 +61,23 @@ also takes one before every merge.
 
 ## "Can I send a link to a research participant?"
 
-Not to someone outside the organisation. The repo and its site are private, so
-anyone without a GitHub account with access gets an error page instead of the
-prototype.
+Yes. The site is public, so anyone with the link can open it, with no GitHub
+account needed. That works for unmoderated testing too, where a participant
+opens the link on their own computer in their own time.
 
-What still works:
+A few things make it go smoothly:
 
-- **Moderated sessions.** You share your screen and drive, or the participant
-  uses your computer. Take a snapshot first, so you can go back to exactly what
-  they saw. Use the directory or the **Prototype** button in the corner to jump
-  to the right page before you hand over.
-- **Anyone inside the organisation.** Stakeholders, developers, other designers
-  and policy leads can open any of these links directly.
+- **Send a snapshot, not a preview.** A preview disappears when its pull
+  request is merged, which could be halfway through a study. A snapshot never
+  changes, so every participant sees the same thing.
+- **Link straight to the first page.** Use the directory or the **Prototype**
+  button to find the page you want them to start on, and send that address.
+- **For moderated sessions,** you can still share your screen and drive, or
+  let the participant use your computer.
 
-What doesn't work is unmoderated testing, where a participant opens a link on
-their own computer in their own time.
-
-Getting past that means making the repo public. That's a real decision, not a
-setting: everything in the repo's history becomes public too, including anything
-committed months ago. Talk it through with your team before anyone does it.
+Because the links are public, anyone a participant forwards one to can open it
+too. That's fine for a prototype full of made-up data, and another reason never
+to put real data in it.
 
 ---
 
@@ -103,7 +101,7 @@ The main one, `/`, which is in the About box on the repo's GitHub page. It shows
 whatever was last merged to `main`, and the address doesn't change. It opens on
 the directory, which links to every page on each side and lists every snapshot.
 
-Put it in the story, the refinement invite and the Teams message. Developers use
+Put it in the story, the refinement invite and the chat message. Developers use
 it to read real values off the screen instead of guessing from a static design,
 so it's worth keeping current.
 

@@ -2,7 +2,7 @@
 
 These apply to every session in this repo.
 
-**First-run rule:** If `.template/SETUP-PENDING` exists and this repo is not `GovAlta-Lab/Design-proto-demo`, this prototype was just created from the template. Before anything else, follow `.agents/skills/first-run-setup/SKILL.md`. In the template itself, the React app lives in `apps/react/` and an Angular version of the same screens lives in `apps/angular/`; paths elsewhere in this file and the skills (`src/...`) are written as they'll be after setup moves the chosen app to the top. Text that only applies to one framework sits between `<!-- REACT -->` and `<!-- /REACT -->` lines, or `<!-- ANGULAR -->` and `<!-- /ANGULAR -->` lines; keep those markers when you edit, because setup uses them. A change to the screens in one app should be made in the other too.
+**First-run rule:** If `.template/SETUP-PENDING` exists and this repo is not `Spark450/Design-proto-demo-AB`, this prototype was just created from the template. Before anything else, follow `.agents/skills/first-run-setup/SKILL.md`. In the template itself, the React app lives in `apps/react/` and an Angular version of the same screens lives in `apps/angular/`; paths elsewhere in this file and the skills (`src/...`) are written as they'll be after setup moves the chosen app to the top. Text that only applies to one framework sits between `<!-- REACT -->` and `<!-- /REACT -->` lines, or `<!-- ANGULAR -->` and `<!-- /ANGULAR -->` lines; keep those markers when you edit, because setup uses them. A change to the screens in one app should be made in the other too.
 
 ## Working here
 

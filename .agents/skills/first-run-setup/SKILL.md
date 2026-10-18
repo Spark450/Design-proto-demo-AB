@@ -1,6 +1,6 @@
 ---
 name: first-run-setup
-description: Use when `.template/SETUP-PENDING` exists in a repo other than GovAlta-Lab/Design-proto-demo, or when the designer says "set this up" in a prototype just created from the template. Walks a designer through turning the template into their own working prototype, with a live URL, in one conversation.
+description: Use when `.template/SETUP-PENDING` exists in a repo other than Spark450/Design-proto-demo-AB, or when the designer says "set this up" in a prototype just created from the template. Walks a designer through turning the template into their own working prototype, with a live URL, in one conversation.
 ---
 
 # Skill: First-run setup
@@ -14,7 +14,8 @@ step in a sentence of plain language. Don't show long command output; summarise
 it. Ask **one question at a time**. Fix what you can yourself; only ask them to
 act when it needs their account or their permission.
 
-Don't run this in `GovAlta-Lab/Design-proto-demo` itself. That's the template.
+Don't run this in `Spark450/Design-proto-demo-AB` itself, or in any repo that
+`gh repo view --json isTemplate` says is a template. That's the template.
 
 ---
 
@@ -32,10 +33,10 @@ Check each one quietly, and only speak up if something fails:
 
 | Check | Command | If it fails |
 | --- | --- | --- |
-| Signed in to GitHub | `gh auth status` | Ask them to run `gh auth login` and choose the browser option |
+| Signed in to GitHub | `gh auth status` | Ask them to run `gh auth login --scopes workflow` and choose the browser option |
+| Can publish workflows | `gh auth status` lists `workflow` under token scopes | Without it, every push that touches `.github/workflows/` is turned down. Ask them to run `gh auth refresh -h github.com -s workflow`, copy the code, press Enter and select **Authorize** in the browser, then wait for "Authentication complete" |
 | Which repo this is | `gh repo view --json nameWithOwner,visibility,isTemplate` | — |
-| Owner is GovAlta-Lab | from above | Tell them prototypes should live in GovAlta-Lab, and that they may need "Lab" access (see `docs/getting-set-up.md`). Continue only if they say to |
-| Private | from above | Recommend private: Pages access control depends on it. Ask before changing it |
+| Public | from above | On a free account the live site only works for a public repo. If it's private, explain that and ask before changing it. Either way, the live site and previews are public, so remind them about sample data only |
 | Node 24 | `node --version` | Point them to nodejs.org, or use `nvm use` if they have nvm |
 | It installs | `npm install` | Read the error and fix it |
 
@@ -56,7 +57,7 @@ If you can't ask (for example, the session is on autopilot), choose the most lik
 
 ## 4. Make it theirs
 
-1. **Make a branch:** `git checkout -b set-up-prototype`. If the session is already on its own branch (Copilot app sessions are), stay on it. Rename it to `set-up-prototype` if you can.
+1. **Make a branch:** `git checkout -b set-up-prototype`. If the session is already on its own branch (app sessions often are), stay on it. Rename it to `set-up-prototype` if you can.
 2. **Move their framework's app to the top of the repo, and remove the other one.** In the template the React app lives in `apps/react/` and the Angular app in `apps/angular/`, under a small wrapper `package.json`. Their prototype only needs one, so replace the wrapper with it. Start by clearing out installed packages and build output:
    ```bash
    rm -rf node_modules apps/react/node_modules apps/react/dist apps/angular/node_modules apps/angular/dist apps/angular/.angular
@@ -127,9 +128,9 @@ Repos made from a template don't copy GitHub settings, so Pages needs turning on
      -f "source[branch]=gh-pages" -f "source[path]=/"
    ```
    If it already exists, use `-X PUT` with the same fields.
-3. **Keep it private:** check that `gh api repos/<owner>/<name>/pages --jq .public` returns `false`. If it's `true`, run `gh api -X PUT repos/<owner>/<name>/pages -F public=false`.
-4. **If anything here fails with 403 or 404:** the designer probably isn't an admin on the repo, or the org restricts Pages. Give them the manual steps: **Settings → Pages → Source: Deploy from a branch → `gh-pages` → `/` → Save.** If that's not available to them either, they'll need a GovAlta-Lab admin.
-5. **If a workflow fails with a permissions error:** **Settings → Actions → General → Workflow permissions → Read and write.** If that's locked, it needs an org admin.
+3. **Redeploy:** the first deploy was built before Pages existed, so its links point at the wrong folder. Run `gh workflow run deploy.yml --ref main` again and wait for it. The site is served from `https://<owner>.github.io/<name>/` and is public. Tell them so in one sentence.
+4. **If anything here fails with 403 or 404:** the designer probably isn't an admin on the repo, or the repo is private on a free account. Give them the manual steps: **Settings → Pages → Source: Deploy from a branch → `gh-pages` → `/` → Save.** If Pages isn't offered, the repo needs to be public or on a paid plan.
+5. **If a workflow fails with a permissions error:** **Settings → Actions → General → Workflow permissions → Read and write.** If that's locked, the repo's owner needs to change it.
 6. **Put the live link on the repo page.** The README tells people the link is in the repo's **About** box, so set it:
    ```bash
    gh repo edit <owner>/<name> --homepage "$(gh api repos/<owner>/<name>/pages --jq .html_url)"
