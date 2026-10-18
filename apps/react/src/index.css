@@ -1,0 +1,77 @@
+@import "@abgov/web-components/index.css";
+@import "@abgov/design-tokens/dist/tokens.css";
+
+/* Mobile: where the workspace menu button sits. src/worker/worker.css starts
+   each worker page just below it, so keep the two in step. */
+@media (max-width: 623px) {
+  goa-workspace-layout {
+    --goa-workspace-layout-mobile-toggle-top: 18px;
+  }
+}
+
+/* ---- Tables ----
+   Rules for the design system's goa-table-cell--* classes, and one size for
+   every table that lists records. The table-sizing skill
+   (.agents/skills/table-sizing/SKILL.md) explains each rule. */
+
+/* Centre each cell on the row, so text, badges and buttons share one line. */
+.goa-table-cell--checkbox,
+.goa-table-cell--text,
+.goa-table-cell--badge,
+.goa-table-cell--actions {
+  vertical-align: middle;
+}
+
+/* goa-button's host is inline and measures 24px while the button inside is
+   40px. inline-flex makes the host measure what it draws. */
+.goa-table-cell--text goa-button,
+.goa-table-cell--badge goa-button,
+.goa-table-cell--actions goa-button {
+  display: inline-flex;
+}
+
+/* A text cell holding a button borrows the action cell's padding, so rows with
+   and without the button are the same height. */
+.goa-table-cell--text:has(goa-button) {
+  --goa-table-padding-cell-text: var(--goa-table-padding-cell-actions, 7px);
+}
+
+.goa-table-cell--checkbox goa-checkbox {
+  margin-bottom: 0;
+}
+
+/* One height for every list of records: 55px body rows, 55.5px heading rows.
+   The class is doubled to outrank the design system's :has()/:not() selectors.
+   Row height acts as a minimum, so a wrapped cell still gets the room it needs. */
+.table--list-sizing.table--list-sizing tbody tr {
+  height: 55px;
+}
+
+/* A sort header adds 4px of padding around its label; give it back here. */
+.table--list-sizing.table--list-sizing thead th:has(goa-table-sort-header) {
+  --goa-table-padding-heading: 16px var(--goa-space-m) 14px;
+}
+
+.table--list-sizing.table--list-sizing
+  thead
+  th:first-child:has(goa-table-sort-header):not(:last-child) {
+  --goa-table-padding-heading: 16px var(--goa-space-m) 14px var(--goa-space-l);
+}
+
+.table--list-sizing.table--list-sizing
+  thead
+  th:last-child:has(goa-table-sort-header):not(:first-child) {
+  --goa-table-padding-heading: 16px var(--goa-space-l) 14px var(--goa-space-m);
+}
+
+.table--list-sizing.table--list-sizing
+  thead
+  th:first-child:last-child:has(goa-table-sort-header) {
+  --goa-table-padding-heading: 16px var(--goa-space-l) 14px var(--goa-space-l);
+}
+
+/* Plain tds miss the cell-class centring above. */
+.table--list-sizing th,
+.table--list-sizing td {
+  vertical-align: middle;
+}

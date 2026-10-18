@@ -1,0 +1,113 @@
+name: Preview a pull request
+
+# Every open pull request gets its own live URL, rebuilt on each push, so a
+# change can be shown to someone before it's merged. The link goes on the pull
+# request itself, so nobody has to be told where to find it.
+#
+# Previews are temporary. They move as work continues and disappear when the
+# branch does. For a link that has to stay put, take a snapshot instead.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  # build-prototype asks the Pages API where the site is served from.
+  pages: read
+  pull-requests: write
+
+# One group per pull request. Previews have no reason to wait for the deploy or
+# for each other: each writes its own directory, and publish-to-pages re-fetches
+# gh-pages and rebuilds its commit on top of the latest tip when a push is
+# rejected, so two builds landing at once is handled there rather than by making
+# everything take turns.
+#
+# The ref matters. With one group for the whole workflow, a preview still sitting
+# pending would be cancelled as soon as someone pushed to a different pull
+# request, because cancel-in-progress only protects a run that has already
+# started — the same way a shared group used to cancel the main deploy. Pushes to
+# the same branch do still displace each other while pending, which is what you
+# want: the newest push is the one worth publishing.
+concurrency:
+  group: pages-preview-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    # A pull request from a fork runs with a read-only token and can't publish.
+    # Everyone working on this prototype pushes branches to the repo itself.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Name the preview
+        id: name
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          slug="$(node scripts/preview-slug.mjs "$BRANCH")"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "Preview directory: preview/$slug"
+
+      - uses: ./.github/actions/build-prototype
+        id: build
+        with:
+          directory: preview/${{ steps.name.outputs.slug }}
+
+      - uses: ./.github/actions/publish-to-pages
+        with:
+          source: dist
+          destination: preview/${{ steps.name.outputs.slug }}
+          message: "Preview ${{ steps.name.outputs.slug }} (#${{ github.event.pull_request.number }})"
+          entry: >-
+            {"kind":"preview",
+            "slug":"${{ steps.name.outputs.slug }}",
+            "branch":"${{ github.event.pull_request.head.ref }}",
+            "pr":"${{ github.event.pull_request.number }}",
+            "title":${{ toJSON(github.event.pull_request.title) }},
+            "commit":"${{ github.event.pull_request.head.sha }}"}
+
+      - name: Put the link on the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          URL: ${{ steps.build.outputs.url }}
+          SITE: ${{ steps.build.outputs.site-url }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          marker="<!-- prototype-preview -->"
+          body="$marker
+          ### Preview this change
+
+          **[Open the prototype from this branch]($URL)**
+
+          Built from \`${SHA:0:7}\`. It updates every time you push, and is
+          deleted when this pull request is closed or merged.
+
+          Anyone opening it needs a GitHub account with access to this
+          repository — it can't be sent to research participants outside the
+          organisation. For a link that stays put after this branch is gone,
+          run the **Snapshot the prototype** workflow.
+
+          [All versions](${SITE}versions/)"
+
+          # Editing one comment rather than adding another, so a branch with
+          # twenty pushes doesn't bury the conversation.
+          existing="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+            --jq "map(select(.body | startswith(\"$marker\"))) | .[0].id // empty" \
+            | head -n 1)"
+
+          if [ -n "$existing" ]; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing}" \
+              -f body="$body" --silent
+            echo "Updated the existing comment."
+          else
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+              -f body="$body" --silent
+            echo "Added a comment."
+          fi

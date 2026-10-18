@@ -1,0 +1,26 @@
+{
+  "name": "design-prototype-template",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/react"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w apps/react",
+    "build": "npm run build -w apps/react --",
+    "build:check": "npm run build:check -w apps/react",
+    "typecheck": "npm run typecheck -w apps/react",
+    "test": "vitest run --dir scripts && npm test -w apps/react",
+    "coverage": "npm run coverage -w apps/react",
+    "preview": "npm run preview -w apps/react",
+    "setup:angular": "npm ci --prefix apps/angular",
+    "dev:angular": "npm run dev --prefix apps/angular",
+    "build:angular": "npm run build --prefix apps/angular --",
+    "typecheck:angular": "npm run typecheck --prefix apps/angular",
+    "test:angular": "npm test --prefix apps/angular"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1",
+    "vitest": "^5.0.1"
+  }
+}

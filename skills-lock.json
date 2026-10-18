@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "component-search": {
+      "source": "GovAlta/ui-components",
+      "sourceType": "github",
+      "skillPath": "skills/component-search/SKILL.md",
+      "computedHash": "7c58efd17779b79b317662b515f3f8da4f46c7edb1dcd4d07f6cc38b7d05d614"
+    },
+    "content-design": {
+      "source": "GovAlta/ui-components",
+      "sourceType": "github",
+      "skillPath": "skills/content-design/SKILL.md",
+      "computedHash": "67810f4d4bc8340f0b560015265ca368a5d4eb96db9ac35414395e219a0caf63"
+    },
+    "using-goa-design-system": {
+      "source": "GovAlta/ui-components",
+      "sourceType": "github",
+      "skillPath": "skills/using-goa-design-system/SKILL.md",
+      "computedHash": "3fc2110636506c39a44a4dac6ee5be12bc6d78eb60a0ada7f595f38594b98f1f"
+    }
+  }
+}

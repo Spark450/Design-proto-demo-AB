@@ -1,0 +1,131 @@
+@if (sampleCase(); as sampleCase) {
+  <app-back-to-cases />
+  <goab-text tag="h1" size="heading-m" mt="xl" mb="xs">{{ sampleCase.name }}</goab-text>
+  <goab-block gap="s" alignment="center" mb="xl">
+    <goab-text size="body-xs" color="secondary" mt="none" mb="none">
+      {{ sampleCase.id }}
+    </goab-text>
+    <goab-badge
+      [type]="statusBadge[sampleCase.status]"
+      [content]="sampleCase.status"
+      [icon]="false"
+    />
+  </goab-block>
+
+  <goab-grid minChildWidth="315px" gap="l">
+    <goab-container accent="thin" type="non-interactive" padding="compact">
+      <goab-block direction="column" gap="m" width="100%">
+        <goab-text tag="h2" size="heading-xs" mt="none" mb="none">
+          Application details
+        </goab-text>
+        <goab-block direction="column" gap="s" width="100%">
+          <goab-grid minChildWidth="200px" gap="s">
+            <app-case-detail label="Name" [value]="sampleCase.name" />
+            <app-case-detail
+              label="Date of birth"
+              [value]="formatDate(sampleCase.dateOfBirth)"
+            />
+            <app-case-detail label="Contact method" [value]="sampleCase.contactMethod" />
+            <app-case-detail
+              label="Submitted"
+              [value]="formatDate(sampleCase.submitted)"
+            />
+          </goab-grid>
+          <app-case-detail
+            label="More information from the applicant"
+            [value]="sampleCase.notes || 'None given.'"
+          />
+        </goab-block>
+      </goab-block>
+    </goab-container>
+
+    <goab-container accent="thin" type="non-interactive" padding="compact">
+      <goab-block direction="column" gap="m" width="100%">
+        <goab-text tag="h2" size="heading-xs" mt="none" mb="none">Decision</goab-text>
+
+        @if (recorded()) {
+          <goab-callout type="success" heading="Decision recorded" mb="none">
+            <goab-text size="body-s" mt="none" mb="none">
+              You {{ decision() === "approve" ? "approved" : "denied" }} this application.
+              In a real service the applicant would now be told.
+            </goab-text>
+          </goab-callout>
+        } @else {
+          <goab-block direction="column" gap="m" width="100%">
+            <goab-form-item
+              label="Approve or deny this application"
+              labelSize="compact"
+              [error]="errors().decision"
+            >
+              <goab-radio-group
+                name="decision"
+                size="compact"
+                orientation="horizontal"
+                [value]="decision()"
+                [error]="!!errors().decision"
+                (onChange)="onDecision($event)"
+              >
+                <goab-radio-item value="approve" label="Approve" />
+                <goab-radio-item value="deny" label="Deny" />
+              </goab-radio-group>
+            </goab-form-item>
+
+            @if (decision() === "deny") {
+              <goab-form-item
+                label="Reason for denying"
+                labelSize="compact"
+                [error]="errors().reason"
+              >
+                <goab-dropdown
+                  name="reason"
+                  size="compact"
+                  width="100%"
+                  [value]="reason()"
+                  [error]="!!errors().reason"
+                  (onChange)="onReason($event)"
+                >
+                  <goab-dropdown-item
+                    value="incomplete"
+                    label="Application is incomplete"
+                  />
+                  <goab-dropdown-item
+                    value="not-eligible"
+                    label="Doesn't meet the criteria"
+                  />
+                  <goab-dropdown-item
+                    value="documents"
+                    label="Documents couldn't be checked"
+                  />
+                </goab-dropdown>
+              </goab-form-item>
+            }
+
+            <goab-form-item label="Note" labelSize="compact" requirement="optional">
+              <goab-textarea
+                name="note"
+                size="compact"
+                [rows]="4"
+                width="100%"
+                [value]="note()"
+                (onChange)="onNote($event)"
+              />
+            </goab-form-item>
+
+            <goab-block>
+              <goab-button size="compact" (onClick)="recordDecision()">
+                Record decision
+              </goab-button>
+            </goab-block>
+          </goab-block>
+        }
+      </goab-block>
+    </goab-container>
+  </goab-grid>
+} @else {
+  <app-back-to-cases />
+  <goab-text tag="h1" size="heading-m" mt="xl" mb="s">Case not found</goab-text>
+  <goab-text size="body-s" mt="none" mb="none">
+    There's no case with the ID {{ caseId() }}. Check the ID, or go back to the list of
+    cases.
+  </goab-text>
+}

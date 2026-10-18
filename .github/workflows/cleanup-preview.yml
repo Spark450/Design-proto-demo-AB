@@ -1,0 +1,100 @@
+name: Clean up a preview
+
+# A preview belongs to a branch that's still being worked on. Once the pull
+# request is closed the preview is misleading — it shows work that either landed
+# (so the main URL shows it) or was abandoned. Either way it shouldn't sit on the
+# versions page pretending to be current.
+#
+# Snapshots are never touched by this. That's the whole point of a snapshot.
+
+on:
+  pull_request:
+    types: [closed]
+  # A branch deleted without going through a pull request, as a safety net.
+  # Removing something that isn't there is a no-op.
+  delete:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# This workflow used to share a group with the main deploy, and that is what
+# stopped merges from reaching the site. Closing a pull request fires this about
+# a second after the push to main fires the deploy, and a run that is only
+# pending gets dropped when something newer joins its group — cancel-in-progress
+# only protects a run that has already started. The deploy was the older of the
+# two, so it lost every time.
+#
+# Nothing here needs to wait for another workflow. A removal touches one preview
+# directory, and publish-to-pages re-fetches gh-pages and rebuilds its commit on
+# top of the latest tip when a push is rejected, which is what makes publishing
+# at the same time as a deploy safe.
+#
+# The ref keeps one pull request's cleanup from displacing another's. Cleanups
+# triggered by a branch being deleted outside a pull request all share the
+# default branch's ref and so still queue behind each other, which is fine — they
+# are rare, and queueing is only ever slow, never wrong.
+concurrency:
+  group: pages-cleanup-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: >-
+      (github.event_name == 'delete' && github.event.ref_type == 'branch') ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Work out which preview to remove
+        id: name
+        env:
+          BRANCH: ${{ github.event_name == 'delete' && github.event.ref || github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          slug="$(node scripts/preview-slug.mjs "$BRANCH")"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "Removing preview/$slug (branch $BRANCH)"
+
+      - uses: ./.github/actions/publish-to-pages
+        with:
+          remove: "true"
+          destination: preview/${{ steps.name.outputs.slug }}
+          message: "Remove preview ${{ steps.name.outputs.slug }}"
+          entry: >-
+            {"kind":"remove-preview","slug":"${{ steps.name.outputs.slug }}"}
+
+      - name: Say so on the pull request
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          MERGED: ${{ github.event.pull_request.merged }}
+        run: |
+          set -euo pipefail
+
+          marker="<!-- prototype-preview -->"
+          existing="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+            --jq "map(select(.body | startswith(\"$marker\"))) | .[0].id // empty" \
+            | head -n 1)"
+          [ -n "$existing" ] || exit 0
+
+          if [ "$MERGED" = "true" ]; then
+            where="This is on the main prototype now."
+          else
+            where="This pull request was closed without merging."
+          fi
+
+          body="$marker
+          ### Preview removed
+
+          $where
+
+          If you need the version that was here to stay reachable, run the
+          **Snapshot the prototype** workflow against this branch before
+          deleting it — a snapshot is kept for good."
+
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing}" \
+            -f body="$body" --silent

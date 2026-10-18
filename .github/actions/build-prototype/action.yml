@@ -1,0 +1,82 @@
+name: Build the prototype
+description: >
+  Builds the prototype for a given place on the site. Used by the main deploy,
+  by preview builds and by snapshots, so all three are built the same way.
+
+inputs:
+  directory:
+    description: >
+      Where this build will live on the site, with no leading or trailing slash
+      — "preview/my-branch", "v/feb-12-session", or empty for the main build at
+      the site root.
+    required: false
+    default: ""
+  output:
+    description: Where to put the built files.
+    required: false
+    default: dist
+
+outputs:
+  base-path:
+    description: The full base path the build was made for.
+    value: ${{ steps.base.outputs.path }}
+  url:
+    description: The address this build will be reachable at once published.
+    value: ${{ steps.base.outputs.url }}
+  site-url:
+    description: The address of the site as a whole.
+    value: ${{ steps.base.outputs.site }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+
+    - run: npm ci
+      shell: bash
+
+    # The site is not always served from /<repo-name>/. An internal or private
+    # repo gets a generated subdomain and is served from the root instead, which
+    # would make every asset URL point at a prefix that isn't there. Ask Pages
+    # where it actually serves this site from rather than assuming.
+    - name: Work out the base path
+      id: base
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        DIRECTORY: ${{ inputs.directory }}
+      run: |
+        set -euo pipefail
+        # gh writes its error body to stdout, so the answer is validated in
+        # base-path.mjs rather than trusted here. See scripts/base-path.test.mjs.
+        site="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .html_url 2>/dev/null || true)"
+        node "${GITHUB_WORKSPACE}/scripts/base-path.mjs" "$site" "$DIRECTORY"
+
+    - name: Build
+      shell: bash
+      env:
+        BASE_PATH: ${{ steps.base.outputs.path }}
+        OUTPUT: ${{ inputs.output }}
+      # Absolute, because in the template the build runs inside apps/<framework>/
+      # and a relative folder would land there instead of at the repo root.
+      run: npm run build -- --outDir "$(realpath -m "$OUTPUT")" --emptyOutDir
+
+    # Template only: the Angular version is built into an angular/ folder inside
+    # each build, so the live template shows both. First-run setup removes
+    # apps/angular/ (or moves it to the top), and this step then does nothing.
+    - name: Build the Angular version
+      shell: bash
+      env:
+        BASE_PATH: ${{ steps.base.outputs.path }}angular/
+        OUTPUT: ${{ inputs.output }}
+      run: |
+        set -euo pipefail
+        if [ ! -f apps/angular/package.json ]; then
+          echo "No apps/angular/ — nothing to build."
+          exit 0
+        fi
+        npm ci --prefix apps/angular
+        npm run build --prefix apps/angular -- --outDir "$(realpath -m "$OUTPUT")/angular"

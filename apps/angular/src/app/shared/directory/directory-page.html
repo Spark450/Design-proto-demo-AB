@@ -1,0 +1,71 @@
+<main class="directory">
+  <app-version-banner />
+
+  <goab-text tag="h1" size="heading-xl" mt="none" mb="m">{{ prototypeName }}</goab-text>
+  <goab-text size="body-l" mt="none" mb="l">
+    A prototype for trying out a service before it's built. Choose where to start.
+  </goab-text>
+
+  <goab-callout type="important" mt="none" mb="2xl">
+    Nothing here is real. It isn't connected to any government system, nothing you type is
+    kept, and no decision made in it counts.
+  </goab-callout>
+
+  <goab-text tag="h2" size="heading-s" mt="none" mb="m">Pages</goab-text>
+  <goab-grid minChildWidth="18rem" gap="l">
+    @for (side of sides(); track side.name) {
+      <goab-container type="non-interactive" accent="thin" mt="none" mb="none">
+        <goab-block direction="column" gap="l" width="100%">
+          <goab-block direction="column" gap="xs" width="100%">
+            <goab-text tag="h3" size="heading-xs" mt="none" mb="none">
+              <a [routerLink]="side.home">{{ side.name }}</a>
+            </goab-text>
+            @if (side.description) {
+              <goab-text size="body-s" mt="none" mb="none">{{
+                side.description
+              }}</goab-text>
+            }
+          </goab-block>
+          <goab-block direction="column" gap="m" width="100%">
+            @for (section of side.sections; track section.heading) {
+              <section>
+                <goab-block direction="column" gap="xs" width="100%">
+                  <goab-text
+                    tag="h4"
+                    size="heading-2xs"
+                    color="secondary"
+                    mt="none"
+                    mb="none"
+                  >
+                    {{ section.heading }}
+                  </goab-text>
+                  <ul class="directory__links">
+                    @for (page of section.pages; track page.path) {
+                      <li>
+                        <goab-text size="body-s" mt="none" mb="none">
+                          <a [routerLink]="page.path">{{ page.label }}</a>
+                        </goab-text>
+                      </li>
+                    }
+                  </ul>
+                </goab-block>
+              </section>
+            }
+          </goab-block>
+        </goab-block>
+      </goab-container>
+    }
+  </goab-grid>
+
+  <goab-text tag="h2" size="heading-s" mt="2xl" mb="xs">Snapshots</goab-text>
+  <goab-text size="body-m" mt="none" mb="m">
+    Frozen copies of the prototype as it was on the day each one was taken. They don't
+    change, so they're safe to share after a research session or a demo.
+  </goab-text>
+  <app-snapshot-list [state]="snapshots()" [siteRoot]="siteRoot" />
+  @if (snapshots().status !== "local") {
+    <goab-text size="body-m" mt="m" mb="none">
+      <a [href]="versionsUrl">See every version, including work still in progress</a>
+    </goab-text>
+  }
+</main>

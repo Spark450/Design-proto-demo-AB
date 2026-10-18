@@ -1,0 +1,94 @@
+<div class="controls" appDraggable #stackElement>
+  @if (open()) {
+    <nav
+      id="prototype-controls-panel"
+      class="controls__panel"
+      aria-label="Prototype pages"
+      (click)="closeOnChoice($event)"
+      (keydown)="closeOnEscape($event)"
+    >
+      <div class="controls__section">
+        <a
+          routerLink="/"
+          class="controls__item"
+          [class.controls__item--current]="pathname() === '/'"
+          [attr.aria-current]="pathname() === '/' ? 'page' : null"
+        >
+          Directory
+        </a>
+      </div>
+
+      <div class="controls__section">
+        <p class="controls__label">Side</p>
+        @for (side of sides(); track side.name) {
+          <a
+            [routerLink]="side.home"
+            class="controls__item"
+            [class.controls__item--current]="side === currentSide()"
+            [attr.aria-current]="side === currentSide() ? 'true' : null"
+          >
+            {{ side.name }}
+          </a>
+        }
+      </div>
+
+      @for (side of listed(); track side.name) {
+        @for (section of side.sections; track section.heading) {
+          <div class="controls__section">
+            <p class="controls__label">
+              {{ currentSide() ? section.heading : side.name + ": " + section.heading }}
+            </p>
+            @for (page of section.pages; track page.path) {
+              <a
+                [routerLink]="page.path"
+                class="controls__item"
+                [class.controls__item--current]="pathname() === page.path"
+                [attr.aria-current]="pathname() === page.path ? 'page' : null"
+              >
+                {{ page.label }}
+              </a>
+            }
+          </div>
+        }
+      }
+
+      <div class="controls__section">
+        <button type="button" class="controls__item" (click)="startOver()">
+          Start over
+        </button>
+        <!-- Only once the controls have been moved. Offering to put them back
+             where they already are would look like a broken button. -->
+        @if (stack().moved()) {
+          <button type="button" class="controls__item" (click)="stack().reset()">
+            Return controls to corner
+          </button>
+        }
+      </div>
+    </nav>
+  }
+
+  <div class="controls__bar">
+    <button
+      type="button"
+      class="controls__handle"
+      aria-label="Move the prototype controls"
+      title="Drag to move. Arrow keys move it too (hold Shift to move further). Double-click or press Escape to put it back in the corner."
+      appDragHandle
+    >
+      <span aria-hidden="true">⠿</span>
+    </button>
+
+    <button
+      #toggle
+      type="button"
+      class="controls__toggle"
+      [attr.aria-expanded]="open()"
+      aria-controls="prototype-controls-panel"
+      (click)="toggleOpen()"
+      (keydown)="closeOnEscape($event)"
+    >
+      <span class="controls__badge">Prototype</span>Pages
+      <span aria-hidden="true">{{ open() ? "▾" : "▴" }}</span>
+    </button>
+  </div>
+</div>

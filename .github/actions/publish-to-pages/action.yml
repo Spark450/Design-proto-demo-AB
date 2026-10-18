@@ -1,0 +1,49 @@
+name: Publish to the Pages branch
+description: >
+  Puts a built directory somewhere on the published site, updates the version
+  manifest and re-renders the versions index. Used for the main build, for
+  previews and for snapshots, so all three land the same way.
+
+inputs:
+  source:
+    description: Directory of built files to publish. Not needed when removing.
+    required: false
+    default: ""
+  destination:
+    description: >
+      Where it goes on the site, with no leading or trailing slash —
+      "preview/my-branch", "v/feb-12-session", or empty for the site root.
+    required: false
+    default: ""
+  remove:
+    description: Set to "true" to delete the destination instead of publishing to it.
+    required: false
+    default: "false"
+  entry:
+    description: JSON describing this version, recorded in versions.json. Optional.
+    required: false
+    default: ""
+  message:
+    description: Commit message for the publish.
+    required: true
+  branch:
+    description: The branch the site is served from.
+    required: false
+    default: gh-pages
+
+runs:
+  using: composite
+  steps:
+    # The work itself is in publish.sh, so the same code that runs here can be
+    # run against a throwaway repository in the tests.
+    - shell: bash
+      env:
+        REMOTE: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        BRANCH: ${{ inputs.branch }}
+        SOURCE: ${{ inputs.source }}
+        DESTINATION: ${{ inputs.destination }}
+        REMOVE: ${{ inputs.remove }}
+        ENTRY: ${{ inputs.entry }}
+        MESSAGE: ${{ inputs.message }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: bash "$ACTION_PATH/publish.sh"

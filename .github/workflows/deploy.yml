@@ -1,0 +1,74 @@
+name: Deploy the prototype
+
+# The main build. This is the URL people already have, and it keeps working
+# exactly as before — the only change is how it gets published.
+#
+# The site now comes from the gh-pages branch rather than from a single upload,
+# because a branch can hold more than one build at a time:
+#
+#   /                   this workflow — the current prototype
+#   /preview/<branch>/  preview.yml   — open pull requests
+#   /v/<name>/          snapshot.yml  — frozen versions
+#   /versions/          generated     — an index of what exists
+
+on:
+  push:
+    branches: [main]
+  # Lets you re-deploy by hand from the Actions tab without pushing.
+  workflow_dispatch:
+
+# Publishing means pushing to the gh-pages branch.
+permissions:
+  contents: write
+  # build-prototype asks the Pages API where the site is served from.
+  pages: read
+
+# A group of this workflow's own, so only another deploy can ever be in it.
+# This used to be a group shared with the preview, cleanup and snapshot
+# workflows, and that shared group is what stopped merges from reaching the site:
+# cancel-in-progress only protects a run that has already started, while a run
+# still sitting pending is dropped the moment anything newer joins its group. On
+# every merge the preview cleanup queued about a second after this deploy and
+# quietly took its place, so the site only moved when someone re-ran the deploy
+# by hand.
+#
+# Sharing a group was never needed. publish-to-pages re-fetches gh-pages and
+# rebuilds its commit on top of the latest tip when a push is rejected, so two
+# workflows publishing at the same time is already handled there. The group now
+# only stops this workflow from racing itself.
+#
+# No ref in the group name, unlike the other three: every run here is main, so
+# rapid merges should queue, and a pending deploy replaced by a newer one loses
+# nothing because the newer commit already contains the older one.
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-prototype
+        id: build
+
+      - name: Build the site's 404 page
+        run: node scripts/make-404.mjs dist
+
+      - uses: ./.github/actions/publish-to-pages
+        with:
+          source: dist
+          message: "Deploy ${{ github.sha }}"
+
+      - name: Say where it went
+        env:
+          URL: ${{ steps.build.outputs.url }}
+        run: |
+          {
+            echo "### Prototype deployed"
+            echo
+            echo "<$URL>"
+            echo
+            echo "[All versions](${URL}versions/)"
+          } >> "$GITHUB_STEP_SUMMARY"

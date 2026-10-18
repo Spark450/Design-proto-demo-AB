@@ -1,0 +1,19 @@
+/* Space around every worker page, inside the workspace card. */
+.worker-page {
+  padding: var(--goa-space-l) var(--goa-space-xl) var(--goa-space-3xl);
+}
+
+/* On a phone the menu button sits in the top-left corner of the card (18px
+   down, 32px tall; see index.css). Starting every page below it means no
+   heading or banner ever hides behind it, whatever the page puts first. */
+@media (max-width: 623px) {
+  .worker-page {
+    padding: calc(18px + 32px + var(--goa-space-m)) var(--goa-space-m) var(--goa-space-2xl);
+  }
+}
+
+/* Space above the search results. On the wrapper, because goa-table's host is
+   inline and drops a top margin (see the table-sizing skill). */
+.search-results {
+  margin-top: var(--goa-space-xl);
+}

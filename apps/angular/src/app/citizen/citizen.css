@@ -1,0 +1,14 @@
+.page-body {
+  padding-top: var(--goa-space-xl);
+  padding-bottom: var(--goa-space-2xl);
+}
+
+/* Text for screen readers only, such as which answer a "Change" link changes. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

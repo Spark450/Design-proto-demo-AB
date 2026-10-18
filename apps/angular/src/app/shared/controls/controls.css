@@ -1,0 +1,135 @@
+/* The prototype controls. Dashed borders and uppercase labels on purpose, so
+   they never look like part of the service. */
+
+.controls {
+  position: fixed;
+  /* Bottom-right, because the bottom-left belongs to the workspace side
+     menu's footer. */
+  bottom: var(--goa-space-s);
+  right: var(--goa-space-s);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--goa-space-xs);
+  font: var(--goa-typography-body-xs);
+}
+
+.controls__bar {
+  display: flex;
+  align-items: stretch;
+  gap: var(--goa-space-xs);
+}
+
+.controls__toggle,
+.controls__handle {
+  display: flex;
+  align-items: center;
+  border: 1px dashed var(--goa-color-greyscale-700);
+  border-radius: var(--goa-border-radius-m);
+  background: var(--goa-color-greyscale-white);
+  font: var(--goa-typography-body-xs);
+}
+
+.controls__toggle {
+  gap: var(--goa-space-xs);
+  padding: var(--goa-space-2xs) var(--goa-space-s);
+  color: var(--goa-color-text-default);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.controls__handle {
+  justify-content: center;
+  padding: var(--goa-space-2xs) var(--goa-space-xs);
+  color: var(--goa-color-text-secondary);
+  line-height: 1;
+  cursor: grab;
+  /* Or a drag on a touchscreen scrolls the page instead of moving the controls. */
+  touch-action: none;
+}
+
+.controls__toggle:hover,
+.controls__handle:hover {
+  background: var(--goa-color-greyscale-100);
+  color: var(--goa-color-text-default);
+}
+
+.controls__handle:active,
+.controls--dragging .controls__handle {
+  cursor: grabbing;
+}
+
+.controls--dragging {
+  user-select: none;
+}
+
+.controls__badge {
+  padding: 0 var(--goa-space-2xs);
+  border-radius: var(--goa-border-radius-s);
+  background: var(--goa-color-warning-default);
+  color: var(--goa-color-text-default);
+  font-weight: var(--goa-font-weight-bold);
+}
+
+.controls__panel {
+  max-height: 70vh;
+  overflow-y: auto;
+  width: 15rem;
+  padding: var(--goa-space-s);
+  border: 1px dashed var(--goa-color-greyscale-700);
+  border-radius: var(--goa-border-radius-m);
+  background: var(--goa-color-greyscale-white);
+  box-shadow: var(--goa-shadow-modal, 0 2px 8px rgb(0 0 0 / 25%));
+}
+
+.controls__section + .controls__section {
+  margin-top: var(--goa-space-s);
+  padding-top: var(--goa-space-s);
+  border-top: 1px dashed var(--goa-color-greyscale-200);
+}
+
+.controls__label {
+  margin: 0 0 var(--goa-space-2xs);
+  color: var(--goa-color-text-secondary);
+  font: var(--goa-typography-body-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.controls__item {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--goa-space-2xs) var(--goa-space-xs);
+  border: 0;
+  border-radius: var(--goa-border-radius-s);
+  background: none;
+  color: var(--goa-color-interactive-default);
+  font: var(--goa-typography-body-xs);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.controls__item:hover {
+  background: var(--goa-color-greyscale-100);
+  text-decoration: underline;
+}
+
+.controls__item--current {
+  color: var(--goa-color-text-default);
+  font-weight: var(--goa-font-weight-bold);
+}
+
+.controls__item--current::after {
+  content: " ●";
+  color: var(--goa-color-info-default);
+}
+
+@media print {
+  .controls {
+    display: none;
+  }
+}

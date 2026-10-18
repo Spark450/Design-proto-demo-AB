@@ -1,0 +1,28 @@
+/* The directory is scaffolding around the prototype, not part of either
+   service, so it's kept plain and has no service header. */
+
+.directory {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: var(--goa-space-xl) var(--goa-space-l) 6rem;
+}
+
+.directory__links,
+.directory__snapshots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.directory__links li + li {
+  margin-top: var(--goa-space-2xs);
+}
+
+.directory__snapshots li {
+  padding: var(--goa-space-s) 0;
+  border-top: 1px solid var(--goa-color-greyscale-200);
+}
+
+.directory__snapshots li:last-child {
+  border-bottom: 1px solid var(--goa-color-greyscale-200);
+}

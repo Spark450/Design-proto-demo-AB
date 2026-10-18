@@ -1,0 +1,132 @@
+name: Snapshot the prototype
+
+# Freezes the prototype as it is right now under a name you choose, at
+# /v/<name>/, and never touches it again.
+#
+# This is the answer to "what did we actually show people on the 12th". A
+# preview moves as work continues and disappears with its branch; a snapshot
+# stays exactly as it was, and unlike a screenshot it's still clickable.
+#
+# Run it from the Actions tab: Actions → Snapshot the prototype → Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Name for this version, used in the URL — e.g. "feb-12-usability-session"'
+        required: true
+        type: string
+      note:
+        description: "What this version was for. Shown on the versions page."
+        required: false
+        type: string
+      ref:
+        description: "Branch, tag or commit to freeze. Defaults to the branch you run this from."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  # build-prototype asks the Pages API where the site is served from.
+  pages: read
+
+# A snapshot writes a directory of its own under /v/ and never touches anything
+# else, so it has no reason to wait for a deploy or a preview. publish-to-pages
+# re-fetches gh-pages and rebuilds its commit on top of the latest tip when a
+# push is rejected, which is what makes publishing at the same time safe. This
+# used to sit in a group shared with the other three workflows, and that sharing
+# is what let a preview cleanup cancel the main deploy.
+#
+# The ref is in the group name so one snapshot can't displace another that is
+# still pending — cancel-in-progress only protects a run that has already
+# started, so a pending run is dropped as soon as anything newer joins its group.
+# Two snapshots started from the same branch still queue, which also keeps the
+# "is this name already taken" check above honest for the case most likely to
+# happen: someone running this twice in a row.
+concurrency:
+  group: pages-snapshot-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the name
+        id: name
+        env:
+          NAME: ${{ inputs.name }}
+        run: |
+          set -euo pipefail
+
+          # The name becomes a directory and part of a URL, so it has to be
+          # boring. Rejecting rather than silently rewriting: you should get the
+          # URL you were told you'd get.
+          if ! printf '%s' "$NAME" | grep -Eq '^[a-z0-9]([a-z0-9-]*[a-z0-9])?$'; then
+            echo "::error::\"$NAME\" won't work as a name. Use lowercase letters, numbers and hyphens — for example feb-12-usability-session."
+            exit 1
+          fi
+          if [ "${#NAME}" -gt 60 ]; then
+            echo "::error::That name is too long. Keep it under 60 characters."
+            exit 1
+          fi
+          echo "slug=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Make sure the name is free
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SLUG: ${{ steps.name.outputs.slug }}
+        run: |
+          set -euo pipefail
+
+          # A snapshot that can be overwritten isn't a snapshot. If the name is
+          # taken, the run stops rather than quietly replacing what someone
+          # else may have already handed out.
+          if gh api "repos/${GITHUB_REPOSITORY}/contents/v/${SLUG}?ref=gh-pages" --silent 2>/dev/null; then
+            echo "::error::There's already a snapshot called \"$SLUG\". Snapshots are never overwritten — pick another name."
+            exit 1
+          fi
+          echo "\"$SLUG\" is free."
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: Note what's being frozen
+        id: source
+        run: |
+          set -euo pipefail
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "ref=${{ inputs.ref || github.ref_name }}" >> "$GITHUB_OUTPUT"
+
+      - uses: ./.github/actions/build-prototype
+        id: build
+        with:
+          directory: v/${{ steps.name.outputs.slug }}
+
+      - uses: ./.github/actions/publish-to-pages
+        with:
+          source: dist
+          destination: v/${{ steps.name.outputs.slug }}
+          message: "Snapshot ${{ steps.name.outputs.slug }}"
+          entry: >-
+            {"kind":"snapshot",
+            "slug":"${{ steps.name.outputs.slug }}",
+            "note":${{ toJSON(inputs.note) }},
+            "ref":"${{ steps.source.outputs.ref }}",
+            "commit":"${{ steps.source.outputs.sha }}"}
+
+      - name: Say where it went
+        env:
+          URL: ${{ steps.build.outputs.url }}
+          SITE: ${{ steps.build.outputs.site-url }}
+          SLUG: ${{ steps.name.outputs.slug }}
+        run: |
+          {
+            echo "### Snapshot \"$SLUG\" created"
+            echo
+            echo "<$URL>"
+            echo
+            echo "This version is frozen. It won't change when the prototype does."
+            echo
+            echo "[All versions](${SITE}versions/)"
+          } >> "$GITHUB_STEP_SUMMARY"
