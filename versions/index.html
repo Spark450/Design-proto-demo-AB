@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Versions — prototype</title>
+    <style>
+      :root { --ink: #333; --muted: #666; --line: #dcdcdc; --link: #0070c4; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; padding: 2.5rem 1.5rem 4rem;
+        font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--ink);
+      }
+      main { max-width: 44rem; margin: 0 auto; }
+      h1 { font-size: 1.9rem; margin: 0 0 .5rem; }
+      h2 { font-size: 1.15rem; margin: 2.5rem 0 .25rem; }
+      a { color: var(--link); }
+      .lede, .blurb { color: var(--muted); margin: 0 0 1rem; }
+      .blurb { font-size: .95rem; margin: .25rem 0 1rem; }
+      .banner {
+        border: 1px dashed #b58100; background: #fdf7e6; color: #6b4e00;
+        padding: .75rem 1rem; border-radius: 4px; font-size: .9rem; margin: 1.5rem 0 0;
+      }
+      ul { list-style: none; margin: 0; padding: 0; }
+      .item { border-top: 1px solid var(--line); padding: .9rem 0; }
+      .item__title { font-weight: 600; text-decoration: none; font-size: 1.05rem; }
+      .item__title:hover { text-decoration: underline; }
+      .item__note { margin: .3rem 0 0; }
+      .item__meta { margin: .3rem 0 0; color: var(--muted); font-size: .85rem; }
+      .item__meta a { color: var(--muted); }
+      .tag {
+        margin-left: .5rem; font-size: .75rem; color: var(--muted);
+        border: 1px solid var(--line); border-radius: 999px; padding: .05rem .5rem;
+      }
+      .empty { border-top: 1px solid var(--line); padding: .9rem 0; color: var(--muted); }
+      code { background: #f3f3f3; padding: .05rem .3rem; border-radius: 3px; font-size: .85em; }
+      footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
+               color: var(--muted); font-size: .85rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Versions of this prototype</h1>
+      <p class="lede">
+        <a href="../">Open the current prototype →</a>
+      </p>
+
+      <div class="banner">
+        This is a prototype, not a service. Nothing here is connected to a real
+        government system and no data is saved. Every link on this page needs a
+        GitHub account with access to the repository — they can't be sent to
+        research participants outside the organisation.
+      </div>
+
+      <h2>Snapshots</h2>
+      <p class="blurb">
+        Frozen. Each one stays exactly as it was, so what you showed in a session
+        stays reachable afterwards.
+      </p>
+      <ul>
+        <li class="empty">No snapshots yet.</li>
+      </ul>
+
+      <h2>Previews</h2>
+      <p class="blurb">
+        Work in progress, one per open pull request. These move as work continues
+        and disappear when the branch is merged or deleted — good for a review,
+        not for a link you need next month.
+      </p>
+      <ul>
+        <li class="empty">No previews open right now.</li>
+      </ul>
+
+      <footer>Generated October 18, 2026.</footer>
+    </main>
+  </body>
+</html>
