@@ -167,9 +167,8 @@ const html = `<!doctype html>
 
       <div class="banner">
         This is a prototype, not a service. Nothing here is connected to a real
-        government system and no data is saved. Every link on this page needs a
-        GitHub account with access to the repository — they can't be sent to
-        research participants outside the organisation.
+        government system and no data is saved. Every link on this page is
+        public: anyone who has it can open it.
       </div>
 
       <h2>Snapshots</h2>

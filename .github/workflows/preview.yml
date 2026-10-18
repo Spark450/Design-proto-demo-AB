@@ -89,10 +89,9 @@ jobs:
           Built from \`${SHA:0:7}\`. It updates every time you push, and is
           deleted when this pull request is closed or merged.
 
-          Anyone opening it needs a GitHub account with access to this
-          repository — it can't be sent to research participants outside the
-          organisation. For a link that stays put after this branch is gone,
-          run the **Snapshot the prototype** workflow.
+          Anyone with this link can open it. For a link that stays put after
+          this branch is gone, such as one for research participants, run the
+          **Snapshot the prototype** workflow.
 
           [All versions](${SITE}versions/)"
 

@@ -83,9 +83,10 @@ Two limits worth knowing:
 
 - **The preview disappears** when the branch is merged or deleted. It's for a
   conversation happening now, not a link someone needs next month.
-- **Anyone opening it needs a GitHub account with access to this repo.** Fine
-  for colleagues and stakeholders inside the organisation; it won't work for
-  research participants outside it.
+- **Anyone with the link can open it.** The site is public, with no sign-in.
+  That's handy for sharing, but it means a preview is never the place for real
+  data. For research participants, send a snapshot instead: it doesn't
+  disappear partway through a study.
 
 If you need a link that survives — one you used in a research session, say — go
 to **Actions → Snapshot the prototype → Run workflow**, point it at your branch
