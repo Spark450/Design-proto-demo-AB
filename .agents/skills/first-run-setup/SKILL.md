@@ -39,6 +39,7 @@ Check each one quietly, and only speak up if something fails:
 | Public | from above | On a free account the live site only works for a public repo. If it's private, explain that and ask before changing it. Either way, the live site and previews are public, so remind them about sample data only |
 | Node 24 | `node --version` | Point them to nodejs.org, or use `nvm use` if they have nvm |
 | It installs | `npm install` | Read the error and fix it |
+| Skills link works (Claude only) | `test -f .claude/skills/visual-design/SKILL.md` | Skip this check if you aren't Claude. If it fails, the link arrived as a plain file, which happens on Windows. Nothing is broken: `CLAUDE.md` tells you to read the skills from `.agents/skills/` instead. Explain in a sentence that skills will still be followed, but won't load on their own, and offer to fix it. The fix needs them to turn on **Settings → System → For developers → Developer Mode**. Then you run `git config core.symlinks true`, `rm .claude/skills` and `git checkout -- .claude/skills`. Check again, and ask them to start a new session so the skills load. Don't commit anything for this: the link in the repo is already right |
 
 ## 3. Ask about the prototype
 

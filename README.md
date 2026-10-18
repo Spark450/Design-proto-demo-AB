@@ -278,4 +278,7 @@ branch exists. In a new copy of the template, first-run setup does this.
   in git history even after it's deleted. That includes research transcripts,
   screenshots of internal systems and keys.
 - **Skills live in `.agents/skills/`.** Copilot and Codex read them from there.
-  `.claude/skills` is a link to the same folder, so Claude reads them too.
+  `.claude/skills` is a link to the same folder, so Claude reads them too. On
+  Windows that link can arrive as a plain file. If it does, `CLAUDE.md` tells
+  Claude to read the skills from `.agents/skills/` instead, and first-run setup
+  offers to fix the link.
