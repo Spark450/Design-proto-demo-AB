@@ -1,14 +1,4 @@
 {
-  "previews": [
-    {
-      "slug": "docs-for-personal-github",
-      "branch": "docs-for-personal-github",
-      "pr": "1",
-      "title": "Update docs for a personal GitHub template",
-      "commit": "bdc42eebaf6399c6bf0db6b1e8f886c173b962e3",
-      "created": "2026-10-18T04:58:56.266Z",
-      "updated": "2026-10-18T04:58:56.266Z"
-    }
-  ],
+  "previews": [],
   "snapshots": []
 }
