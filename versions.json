@@ -1,14 +1,4 @@
 {
-  "previews": [
-    {
-      "slug": "add-building-with-ai-guide",
-      "branch": "add-building-with-ai-guide",
-      "pr": "3",
-      "title": "Add a \"Building coded prototypes with AI\" guide",
-      "commit": "fbc46da360d7e7cbf93738b480601eb5ac8968f6",
-      "created": "2026-10-21T04:01:30.536Z",
-      "updated": "2026-10-21T04:01:30.536Z"
-    }
-  ],
+  "previews": [],
   "snapshots": []
 }
