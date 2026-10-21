@@ -13,8 +13,9 @@ copy:
 4. Start a session in it and say: *"Set this up."*
 
 The AI asks a few questions, gets it running, switches on its live link and
-opens your first pull request. It takes about 10 minutes. First time? Work
-through [Getting set up](docs/getting-set-up.md) first.
+opens your first pull request. It takes about 10 minutes. First time? Read
+[Building coded prototypes with AI](docs/building-with-ai.md) for an overview,
+then work through [Getting set up](docs/getting-set-up.md).
 
 To see what you start with before making a copy, open the template's live demo:
 <https://spark450.github.io/Design-proto-demo-AB/>. The Angular version is at

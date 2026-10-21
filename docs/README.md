@@ -4,6 +4,8 @@ This folder holds the guides for this prototype and its requirements docs.
 
 ## Guides
 
+- [Building coded prototypes with AI](building-with-ai.md): an overview of
+  one way of working with this template. Start here if you're new
 - [Getting set up](getting-set-up.md): access, tools and connections, done once
 - [Showing your work](showing-your-work.md): which link to send, and when
 
